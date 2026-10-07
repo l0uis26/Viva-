@@ -1,0 +1,1303 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Viva+ — Cadastro</title>
+
+  <!--
+    Supabase JS
+    CDN oficial do SDK.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --primary: #087f6e;
+      --primary-dark: #056456;
+      --primary-light: #e7f5f2;
+
+      --background: #f5f8f7;
+      --surface: #ffffff;
+
+      --text: #17211f;
+      --muted: #697671;
+
+      --border: #dce5e2;
+
+      --danger: #b84c4c;
+      --success: #287c59;
+
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: var(--background);
+      color: var(--text);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+
+      display: grid;
+      place-items: center;
+
+      padding: 20px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+
+      margin: 0 auto 10px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 15px;
+
+      background: var(--primary);
+      color: white;
+
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .brand h1 {
+      margin: 0;
+
+      color: var(--primary);
+
+      font-size: 28px;
+    }
+
+    .brand p {
+      margin: 7px 0 0;
+
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--surface);
+
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+
+      padding: 25px;
+
+      box-shadow:
+        0 12px 40px rgba(20, 50, 45, .07);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      gap: 5px;
+
+      padding: 4px;
+
+      background: var(--background);
+
+      border-radius: 12px;
+
+      margin-bottom: 25px;
+    }
+
+    .tab {
+      border: 0;
+
+      padding: 11px;
+
+      border-radius: 9px;
+
+      background: transparent;
+
+      color: var(--muted);
+
+      font-weight: 700;
+    }
+
+    .tab.active {
+      background: white;
+      color: var(--primary);
+
+      box-shadow:
+        0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .form-group {
+      margin-bottom: 17px;
+    }
+
+    label {
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 11px;
+
+      background: white;
+
+      color: var(--text);
+
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+
+      box-shadow:
+        0 0 0 3px var(--primary-light);
+    }
+
+    .checkbox {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+
+      margin: 18px 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .checkbox input {
+      width: auto;
+      margin-top: 3px;
+    }
+
+    .btn {
+      width: 100%;
+
+      border: 0;
+
+      border-radius: 12px;
+
+      padding: 13px;
+
+      font-weight: 800;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-primary:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+
+      padding: 12px 14px;
+
+      border-radius: 11px;
+
+      margin-bottom: 17px;
+
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      display: block;
+
+      background: #fff1f1;
+      color: var(--danger);
+      border: 1px solid #f0cccc;
+    }
+
+    .message.success {
+      display: block;
+
+      background: #edf8f2;
+      color: var(--success);
+      border: 1px solid #cce8d8;
+    }
+
+    .password-help {
+      margin-top: 6px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+    .user-screen {
+      display: none;
+
+      text-align: center;
+    }
+
+    .user-screen.active {
+      display: block;
+    }
+
+    .user-icon {
+      width: 70px;
+      height: 70px;
+
+      margin: 0 auto 18px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      background: var(--primary-light);
+
+      color: var(--primary);
+
+      font-size: 30px;
+    }
+
+    .user-screen h2 {
+      margin-bottom: 8px;
+    }
+
+    .user-screen p {
+      color: var(--muted);
+    }
+
+    .logout {
+      margin-top: 20px;
+
+      background: #fff0f0;
+      color: var(--danger);
+    }
+
+    .footer {
+      margin-top: 20px;
+
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 12px;
+
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="auth-container">
+
+    <!-- MARCA -->
+
+    <div class="brand">
+      <div class="brand-mark">+</div>
+
+      <h1>Viva+</h1>
+
+      <p>
+        Seus hábitos. Sua evolução.
+      </p>
+    </div>
+
+
+    <!-- AUTENTICAÇÃO -->
+
+    <div id="authCard" class="card">
+
+      <div class="tabs">
+
+        <button
+          id="registerTab"
+          class="tab active"
+          onclick="showAuthMode('register')"
+        >
+          Criar conta
+        </button>
+
+        <button
+          id="loginTab"
+          class="tab"
+          onclick="showAuthMode('login')"
+        >
+          Entrar
+        </button>
+
+      </div>
+
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+
+      <!-- CADASTRO -->
+
+      <form
+        id="registerForm"
+        onsubmit="register(event)"
+      >
+
+        <div class="form-group">
+
+          <label for="registerName">
+            Nome ou apelido
+          </label>
+
+          <input
+            id="registerName"
+            type="text"
+            autocomplete="name"
+            placeholder="Como podemos chamar você?"
+            required
+            maxlength="80"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="registerEmail">
+            E-mail
+          </label>
+
+          <input
+            id="registerEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="voce@email.com"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="registerPassword">
+            Senha
+          </label>
+
+          <input
+            id="registerPassword"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Crie uma senha"
+            minlength="8"
+            required
+          >
+
+          <div class="password-help">
+            Use pelo menos 8 caracteres.
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="registerPasswordConfirm">
+            Confirmar senha
+          </label>
+
+          <input
+            id="registerPasswordConfirm"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Digite novamente"
+            minlength="8"
+            required
+          >
+
+        </div>
+
+
+        <label class="checkbox">
+
+          <input
+            id="terms"
+            type="checkbox"
+            required
+          >
+
+          <span>
+            Concordo com os termos de uso e a política
+            de privacidade do Viva+.
+          </span>
+
+        </label>
+
+
+        <button
+          id="registerButton"
+          class="btn btn-primary"
+          type="submit"
+        >
+          Criar minha conta
+        </button>
+
+      </form>
+
+
+      <!-- LOGIN -->
+
+      <form
+        id="loginForm"
+        class="hidden"
+        onsubmit="login(event)"
+      >
+
+        <div class="form-group">
+
+          <label for="loginEmail">
+            E-mail
+          </label>
+
+          <input
+            id="loginEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="voce@email.com"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="loginPassword">
+            Senha
+          </label>
+
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Sua senha"
+            required
+          >
+
+        </div>
+
+
+        <button
+          id="loginButton"
+          class="btn btn-primary"
+          type="submit"
+        >
+          Entrar
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- USUÁRIO LOGADO -->
+
+    <div
+      id="userScreen"
+      class="card user-screen"
+    >
+
+      <div class="user-icon">
+        ✓
+      </div>
+
+      <h2>
+        Bem-vindo ao Viva+
+      </h2>
+
+      <p id="loggedUser"></p>
+
+      <p>
+        Sua conta está funcionando.
+        O próximo passo pode ser o onboarding
+        e a criação do seu perfil.
+      </p>
+
+      <button
+        class="btn logout"
+        onclick="logout()"
+      >
+        Sair da conta
+      </button>
+
+    </div>
+
+
+    <div class="footer">
+
+      O Viva+ fornece informações educativas sobre hábitos
+      e bem-estar. Não realiza diagnóstico ou substitui
+      profissionais de saúde.
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/*
+============================================================
+CONFIGURAÇÃO DO SUPABASE
+============================================================
+
+1. Crie um projeto em:
+   https://supabase.com/
+
+2. No painel do projeto, abra:
+   Project Settings
+   → API
+
+3. Copie:
+   Project URL
+   Publishable key / anon key
+
+4. Cole abaixo.
+
+NUNCA coloque aqui a:
+   service_role key
+
+A service_role é secreta e não pode ser exposta no navegador.
+*/
+
+
+const SUPABASE_URL =
+  "COLE_AQUI_A_URL_DO_SEU_PROJETO";
+
+
+const SUPABASE_KEY =
+  "COLE_AQUI_A_CHAVE_PUBLICA_DO_SEU_PROJETO";
+
+
+/*
+============================================================
+CLIENTE
+============================================================
+*/
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/*
+============================================================
+ELEMENTOS
+============================================================
+*/
+
+const authCard =
+  document.getElementById("authCard");
+
+const userScreen =
+  document.getElementById("userScreen");
+
+const registerForm =
+  document.getElementById("registerForm");
+
+const loginForm =
+  document.getElementById("loginForm");
+
+const message =
+  document.getElementById("message");
+
+
+/*
+============================================================
+MODO LOGIN / CADASTRO
+============================================================
+*/
+
+function showAuthMode(mode) {
+
+  clearMessage();
+
+
+  const registerTab =
+    document.getElementById("registerTab");
+
+  const loginTab =
+    document.getElementById("loginTab");
+
+
+  if (mode === "register") {
+
+    registerForm.classList.remove("hidden");
+    loginForm.classList.add("hidden");
+
+    registerTab.classList.add("active");
+    loginTab.classList.remove("active");
+
+  } else {
+
+    registerForm.classList.add("hidden");
+    loginForm.classList.remove("hidden");
+
+    registerTab.classList.remove("active");
+    loginTab.classList.add("active");
+
+  }
+
+}
+
+
+/*
+============================================================
+CADASTRO
+============================================================
+*/
+
+async function register(event) {
+
+  event.preventDefault();
+
+  clearMessage();
+
+
+  const name =
+    document
+      .getElementById("registerName")
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById("registerEmail")
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById("registerPassword")
+      .value;
+
+
+  const passwordConfirm =
+    document
+      .getElementById("registerPasswordConfirm")
+      .value;
+
+
+  const terms =
+    document
+      .getElementById("terms")
+      .checked;
+
+
+  /*
+    Validações locais
+  */
+
+  if (name.length < 2) {
+
+    showMessage(
+      "Digite um nome ou apelido válido.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password.length < 8) {
+
+    showMessage(
+      "A senha precisa ter pelo menos 8 caracteres.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password !== passwordConfirm) {
+
+    showMessage(
+      "As senhas não são iguais.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!terms) {
+
+    showMessage(
+      "Você precisa aceitar os termos para continuar.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById("registerButton");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Criando conta...";
+
+
+  try {
+
+    /*
+      Cria o usuário no Supabase Auth.
+
+      O nome é colocado nos metadados do usuário.
+    */
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+
+          data: {
+            display_name: name
+          }
+
+        }
+
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    /*
+      Se a confirmação de e-mail estiver
+      habilitada no Supabase, data.session
+      poderá ser null.
+
+      Nesse caso o usuário precisa confirmar
+      o e-mail antes de entrar.
+    */
+
+    if (!data.session) {
+
+      showMessage(
+        "Conta criada. Verifique seu e-mail para confirmar a conta antes de entrar.",
+        "success"
+      );
+
+      registerForm.reset();
+
+      return;
+    }
+
+
+    /*
+      Se confirmação de e-mail estiver
+      desabilitada, o usuário já estará logado.
+    */
+
+    await createProfile(
+      data.user,
+      name
+    );
+
+
+    showLoggedUser(
+      data.user
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      translateSupabaseError(error),
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Criar minha conta";
+
+  }
+
+}
+
+
+/*
+============================================================
+CRIAR PROFILE
+============================================================
+
+A tabela profiles será criada no Supabase.
+
+Estrutura:
+
+profiles
+-------------------------
+id
+display_name
+created_at
+*/
+
+async function createProfile(
+  user,
+  displayName
+) {
+
+  if (!user) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .upsert({
+
+        id: user.id,
+
+        display_name: displayName
+
+      });
+
+
+  if (error) {
+
+    console.error(
+      "Erro ao criar profile:",
+      error
+    );
+
+    /*
+      Não derrubamos a autenticação
+      se o perfil falhar.
+
+      O usuário continua autenticado.
+    */
+
+  }
+
+}
+
+
+/*
+============================================================
+LOGIN
+============================================================
+*/
+
+async function login(event) {
+
+  event.preventDefault();
+
+  clearMessage();
+
+
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+
+  const button =
+    document.getElementById("loginButton");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Entrando...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email,
+
+        password
+
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    showLoggedUser(
+      data.user
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      translateSupabaseError(error),
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Entrar";
+
+  }
+
+}
+
+
+/*
+============================================================
+MOSTRAR USUÁRIO LOGADO
+============================================================
+*/
+
+async function showLoggedUser(user) {
+
+  if (!user) {
+    return;
+  }
+
+
+  let displayName =
+    user.user_metadata
+      ?.display_name;
+
+
+  /*
+    Tentamos recuperar o nome
+    do perfil no banco.
+  */
+
+  const {
+    data: profile
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+
+  if (
+    profile &&
+    profile.display_name
+  ) {
+
+    displayName =
+      profile.display_name;
+
+  }
+
+
+  document.getElementById("loggedUser")
+    .textContent =
+      `${displayName || "Usuário"}, sua conta está conectada como ${user.email}.`;
+
+
+  authCard.style.display =
+    "none";
+
+  userScreen.classList.add("active");
+
+}
+
+
+/*
+============================================================
+LOGOUT
+============================================================
+*/
+
+async function logout() {
+
+  const {
+    error
+  } =
+    await supabaseClient.auth.signOut();
+
+
+  if (error) {
+
+    showMessage(
+      error.message,
+      "error"
+    );
+
+    return;
+  }
+
+
+  userScreen.classList.remove("active");
+
+  authCard.style.display =
+    "block";
+
+
+  showAuthMode("login");
+
+  document
+    .getElementById("loginForm")
+    .reset();
+
+}
+
+
+/*
+============================================================
+SESSÃO
+============================================================
+*/
+
+async function checkSession() {
+
+  const {
+    data
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (
+    data &&
+    data.session &&
+    data.session.user
+  ) {
+
+    showLoggedUser(
+      data.session.user
+    );
+
+  }
+
+}
+
+
+/*
+============================================================
+MONITORAMENTO DA SESSÃO
+============================================================
+*/
+
+supabaseClient.auth.onAuthStateChange(
+  async (event, session) => {
+
+    console.log(
+      "Auth:",
+      event
+    );
+
+    if (
+      event === "SIGNED_IN" &&
+      session
+    ) {
+
+      /*
+        A interface já é atualizada pelo
+        fluxo de login/cadastro.
+      */
+
+    }
+
+  }
+);
+
+
+/*
+============================================================
+MENSAGENS
+============================================================
+*/
+
+function showMessage(
+  text,
+  type
+) {
+
+  message.textContent =
+    text;
+
+  message.className =
+    "message " + type;
+
+}
+
+
+function clearMessage() {
+
+  message.textContent =
+    "";
+
+  message.className =
+    "message";
+
+}
+
+
+/*
+============================================================
+TRADUÇÃO DE ERROS
+============================================================
+*/
+
+function translateSupabaseError(error) {
+
+  const text =
+    String(
+      error?.message || ""
+    ).toLowerCase();
+
+
+  if (
+    text.includes("user already registered")
+  ) {
+
+    return "Este e-mail já possui uma conta.";
+
+  }
+
+
+  if (
+    text.includes("invalid login credentials")
+  ) {
+
+    return "E-mail ou senha incorretos.";
+
+  }
+
+
+  if (
+    text.includes("password should be at least")
+  ) {
+
+    return "A senha não atende aos requisitos mínimos.";
+
+  }
+
+
+  if (
+    text.includes("email not confirmed")
+  ) {
+
+    return "Confirme seu e-mail antes de entrar.";
+
+  }
+
+
+  return (
+    error?.message ||
+    "Não foi possível concluir a operação."
+  );
+
+}
+
+
+/*
+============================================================
+INICIALIZAÇÃO
+============================================================
+*/
+
+checkSession();
+
+</script>
+
+</body>
+</html>
+```
